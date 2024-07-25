@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fandom Chat</title>
@@ -65,6 +68,10 @@
                     username: username,
                     message: message,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    console.log("Message sent successfully.");
+                }).catch((error) => {
+                    console.error("Error sending message: ", error);
                 });
                 document.getElementById('message').value = '';
             } else {
@@ -83,6 +90,8 @@
                     newMessage.innerHTML = '<span class="username">' + messageData.username + ':</span> <span class="text">' + messageData.message + '</span>';
                     chat.appendChild(newMessage);
                 });
+            }, function(error) {
+                console.error("Error loading messages: ", error);
             });
         }
 
