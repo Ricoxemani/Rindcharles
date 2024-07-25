@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fandom Chat</title>
@@ -43,9 +40,11 @@
         }
     </style>
     <!-- Add Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js"></script>
-    <script>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js';
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js';
+
         // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCAYgeaR8W-0siQBU42O1mad6tuy-YyyyE",
@@ -57,40 +56,44 @@
         };
 
         // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        function sendMessage() {
-            var username = document.getElementById('username').value;
-            var message = document.getElementById('message').value;
+        // Function to send a message
+        window.sendMessage = async function() {
+            const username = document.getElementById('username').value;
+            const message = document.getElementById('message').value;
             if (username && message) {
-                db.collection("messages").add({
-                    username: username,
-                    message: message,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
+                try {
+                    await addDoc(collection(db, "messages"), {
+                        username: username,
+                        message: message,
+                        timestamp: serverTimestamp()
+                    });
                     console.log("Message sent successfully.");
-                }).catch((error) => {
+                } catch (error) {
                     console.error("Error sending message: ", error);
-                });
+                }
                 document.getElementById('message').value = '';
             } else {
                 alert('Please enter both a username and a message.');
             }
         }
 
-        function loadMessages() {
-            var chat = document.getElementById('chat');
-            db.collection("messages").orderBy("timestamp").onSnapshot(function(snapshot) {
+        // Function to load messages
+        window.loadMessages = function() {
+            const chat = document.getElementById('chat');
+            const q = query(collection(db, "messages"), orderBy("timestamp"));
+            onSnapshot(q, (snapshot) => {
                 chat.innerHTML = '';
-                snapshot.forEach(function(doc) {
-                    var messageData = doc.data();
-                    var newMessage = document.createElement('div');
+                snapshot.forEach((doc) => {
+                    const messageData = doc.data();
+                    const newMessage = document.createElement('div');
                     newMessage.classList.add('message');
-                    newMessage.innerHTML = '<span class="username">' + messageData.username + ':</span> <span class="text">' + messageData.message + '</span>';
+                    newMessage.innerHTML = `<span class="username">${messageData.username}:</span> <span class="text">${messageData.message}</span>`;
                     chat.appendChild(newMessage);
                 });
-            }, function(error) {
+            }, (error) => {
                 console.error("Error loading messages: ", error);
             });
         }
