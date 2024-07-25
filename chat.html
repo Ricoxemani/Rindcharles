@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fandom Chat</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 50px;
+        }
+        input, button {
+            font-size: 16px;
+            margin: 10px;
+        }
+        #chat {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .username {
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        .text {
+            color: #ccc;
+        }
+    </style>
+    <!-- Add Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js"></script>
+    <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAYgeaR8W-0siQBU42O1mad6tuy-YyyyE",
+            authDomain: "rindchat.firebaseapp.com",
+            projectId: "rindchat",
+            storageBucket: "rindchat.appspot.com",
+            messagingSenderId: "886074826091",
+            appId: "1:886074826091:web:cb9eae692bbc81d043802e"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function sendMessage() {
+            var username = document.getElementById('username').value;
+            var message = document.getElementById('message').value;
+            if (username && message) {
+                db.collection("messages").add({
+                    username: username,
+                    message: message,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                document.getElementById('message').value = '';
+            } else {
+                alert('Please enter both a username and a message.');
+            }
+        }
+
+        function loadMessages() {
+            var chat = document.getElementById('chat');
+            db.collection("messages").orderBy("timestamp").onSnapshot(function(snapshot) {
+                chat.innerHTML = '';
+                snapshot.forEach(function(doc) {
+                    var messageData = doc.data();
+                    var newMessage = document.createElement('div');
+                    newMessage.classList.add('message');
+                    newMessage.innerHTML = '<span class="username">' + messageData.username + ':</span> <span class="text">' + messageData.message + '</span>';
+                    chat.appendChild(newMessage);
+                });
+            });
+        }
+
+        // Load messages from Firestore when the page loads
+        window.onload = function() {
+            loadMessages();
+        };
+    </script>
+</head>
+<body>
+    <h1>Fandom Chat</h1>
+    <input type="text" id="username" placeholder="Username">
+    <input type="text" id="message" placeholder="Message">
+    <button onclick="sendMessage()">Send</button>
+    <div id="chat"></div>
+</body>
+</html>
