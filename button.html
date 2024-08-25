@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fandom Chat</title>
+    <title>Remote</title>
     <style>
         body {
             background-color: black;
@@ -76,9 +76,6 @@
 
         // Function to send a message
         window.sendMessage = async function() {
-            const username = document.getElementById('username').value;
-            const message = document.getElementById('message').value;
-            if (username && message) {
                 try {
                     await addDoc(collection(db, "messages"), {
                         username: "system",
@@ -90,9 +87,6 @@
                     console.error("Error sending message: ", error);
                 }
                 document.getElementById('message').value = '';
-            } else {
-                alert('Please enter both a username and a message.');
-            }
         }
 
         // Function to load messages
