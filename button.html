@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js';
+        import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js';
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAYgeaR8W-0siQBU42O1mad6tuy-YyyyE",
+            authDomain: "rindchat.firebaseapp.com",
+            projectId: "rindchat",
+            storageBucket: "rindchat.appspot.com",
+            messagingSenderId: "886074826091",
+            appId: "1:886074826091:web:cb9eae692bbc81d043802e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function sendButtonMessage() {
+            try {
+                await addDoc(collection(db, "messages"), {
+                    username: "system",
+                    message: "8",
+                    timestamp: serverTimestamp()
+                });
+                console.log("Button message sent successfully.");
+            } catch (error) {
+                console.error("Error sending button message: ", error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <button onclick="sendButtonMessage()">Button</button>
+</body>
+</html>
