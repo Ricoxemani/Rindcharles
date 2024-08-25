@@ -3,29 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Remote</title>
-    <style>
-        body {
-            background-color: black;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        button {
-            font-size: 20px;
-            padding: 10px 20px;
-        }
-    </style>
+    <title>Remote Page</title>
     <!-- Firebase App (the core Firebase SDK) -->
     <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js"></script>
+    <!-- Firebase Firestore -->
     <script src="https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js"></script>
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js';
-        import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js';
-
+    <script>
         // Your Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCAYgeaR8W-0siQBU42O1mad6tuy-YyyyE",
@@ -35,26 +18,27 @@
             messagingSenderId: "886074826091",
             appId: "1:886074826091:web:cb9eae692bbc81d043802e"
         };
-
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        async function sendButtonMessage() {
-            try {
-                await addDoc(collection(db, "messages"), {
-                    username: "system",
-                    message: "8",
-                    timestamp: serverTimestamp()
-                });
-                console.log("Button message sent successfully.");
-            } catch (error) {
-                console.error("Error sending button message: ", error);
-            }
+        firebase.initializeApp(firebaseConfig);
+        
+        // Function to send message to Firestore
+        function sendButtonMessage() {
+            // Get Firestore
+            const db = firebase.firestore();
+            // Add a message to the 'messages' collection
+            db.collection('messages').add({
+                message: "8",
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                console.log('Message sent successfully');
+            }).catch((error) => {
+                console.error('Error sending message: ', error);
+            });
         }
     </script>
 </head>
 <body>
+    <!-- Button to trigger the message -->
     <button onclick="sendButtonMessage()">Button</button>
 </body>
 </html>
