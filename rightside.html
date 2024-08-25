@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 50px;
+        }
+        .sticky-gif {
+            position: fixed;
+            width: 128px;
+            height: 256px;
+        }
+        .left-gif {
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+        .right-gif {
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+        }
+        input, button {
+            font-size: 16px;
+            margin: 10px;
+        }
+        #chat {
+            margin-top: 20px;
+            text-align: left;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .username {
+            font-weight: bold;
+            color: #ffcc00;
+        }
+        .text {
+            color: #ccc;
+        }
+    </style>
+    <!-- Add Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js';
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js';
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAYgeaR8W-0siQBU42O1mad6tuy-YyyyE",
+            authDomain: "rindchat.firebaseapp.com",
+            projectId: "rindchat",
+            storageBucket: "rindchat.appspot.com",
+            messagingSenderId: "886074826091",
+            appId: "1:886074826091:web:cb9eae692bbc81d043802e"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Function to send a message
+        window.sendMessage = async function() {
+                try {
+                    await addDoc(collection(db, "messages"), {
+                        username: "system",
+                        message: "9",
+                        timestamp: serverTimestamp()
+                    });
+                    console.log("Message sent successfully.");
+                } catch (error) {
+                    console.error("Error sending message: ", error);
+                }
+                document.getElementById('message').value = '';
+        }
+
+        // Function to load messages
+        window.loadMessages = function() {
+            const chat = document.getElementById('chat');
+            const q = query(collection(db, "messages"), orderBy("timestamp"));
+            onSnapshot(q, (snapshot) => {
+                chat.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const messageData = doc.data();
+                    const newMessage = document.createElement('div');
+                    newMessage.classList.add('message');
+                    newMessage.innerHTML = `<span class="username">${messageData.username}:</span> <span class="text">${messageData.message}</span>`;
+                    chat.appendChild(newMessage);
+                });
+            }, (error) => {
+                console.error("Error loading messages: ", error);
+            });
+        }
+
+        // Load messages from Firestore when the page loads
+        window.onload = function() {
+            loadMessages();
+        };
+    </script>
+</head>
+<body>
+    <button onclick="sendMessage()">Right side up Button</button>
+</body>
+</html>
